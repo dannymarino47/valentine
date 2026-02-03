@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Valentine?</title>
+
+<style>
+    body {
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #ffc0cb;
+        font-family: 'Comic Sans MS', cursive, sans-serif;
+    }
+
+    #container {
+        text-align: center;
+        z-index: 2;
+    }
+
+    h1 {
+        font-size: 48px;
+        color: #b30059;
+    }
+
+    button {
+        padding: 15px 35px;
+        font-size: 22px;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        margin: 10px;
+    }
+
+    #yesBtn {
+        background-color: #ff4d88;
+        color: white;
+    }
+
+    #noBtn {
+        position: absolute;
+        background-color: #999;
+        color: white;
+    }
+
+    .message {
+        display: none;
+        font-size: 38px;
+        color: #b30059;
+        margin-top: 15px;
+    }
+
+    canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+    }
+
+    .heart {
+        position: fixed;
+        font-size: 32px;
+        animation: floatUp 2.5s ease-out forwards;
+        pointer-events: none;
+    }
+
+    @keyframes floatUp {
+        from {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        to {
+            transform: translateY(-180px) scale(1.4);
+            opacity: 0;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<canvas id="confetti"></canvas>
+
+<div id="container">
+    <h1>Will you be my valentine? 💖</h1>
+    <button id="yesBtn" onclick="sayYes()">Yes 💕</button>
+    <button id="noBtn" onmouseover="moveNo()">No 😅</button>
+
+    <div id="msg1" class="message">YAY!!! I knew you’d say yes 💘</div>
+    <div id="msg2" class="message">Yayyyy. I love you 💞😍</div>
+</div>
+
+<script>
+/* NO BUTTON RUNS AWAY */
+function moveNo() {
+    const noBtn = document.getElementById("noBtn");
+    const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+    const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+}
+
+/* YES CLICK */
+function sayYes() {
+    document.querySelector("h1").style.display = "none";
+    document.getElementById("yesBtn").style.display = "none";
+    document.getElementById("noBtn").style.display = "none";
+
+    document.getElementById("msg1").style.display = "block";
+
+    setTimeout(() => {
+        document.getElementById("msg2").style.display = "block";
+    }, 1200);
+
+    startConfetti();
+    spawnHearts();
+}
+
+/* HEART POPUPS (MIX) */
+const heartEmojis = ["💖", "💘", "💞", "😍"];
+
+function spawnHearts() {
+    for (let i = 0; i < 40; i++) {
+        setTimeout(() => {
+            const heart = document.createElement("div");
+            heart.className = "heart";
+            heart.innerHTML = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+            heart.style.left = Math.random() * window.innerWidth + "px";
+            heart.style.top = window.innerHeight + "px";
+            document.body.appendChild(heart);
+
+            setTimeout(() => heart.remove(), 2500);
+        }, i * 100);
+    }
+}
+
+/* CONFETTI */
+const canvas = document.getElementById("confetti");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let confettiPieces = [];
+
+function startConfetti() {
+    for (let i = 0; i < 300; i++) {
+        confettiPieces.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height - canvas.height,
+            r: Math.random() * 6 + 4,
+            d: Math.random() * 0.5 + 0.5,
+            color: `hsl(${Math.random() * 360}, 100%, 70%)`
+        });
+    }
+    requestAnimationFrame(updateConfetti);
+}
+
+function updateConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    confettiPieces.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+        p.y += p.d * 5;
+        if (p.y > canvas.height) p.y = -10;
+    });
+    requestAnimationFrame(updateConfetti);
+}
+</script>
+
+</body>
+</html>
